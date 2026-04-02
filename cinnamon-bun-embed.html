@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mmmmmmmmm Cinnabon</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf3e3;
+    --dough: #d4924d;
+    --cinn: #8b4513;
+    --dark: #2c1a08;
+    --accent: #c8832a;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--cream);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(212,146,77,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .ring {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    border: 1px solid rgba(200,131,42,0.15);
+    animation: spin linear infinite;
+  }
+  .ring:nth-child(1) { width: 700px; height: 700px; top:50%; left:50%; margin:-350px; animation-duration: 90s; }
+  .ring:nth-child(2) { width: 500px; height: 500px; top:50%; left:50%; margin:-250px; animation-duration: 60s; animation-direction: reverse; border-style: dashed; border-color: rgba(139,69,19,0.1); }
+  .ring:nth-child(3) { width: 300px; height: 300px; top:50%; left:50%; margin:-150px; animation-duration: 40s; border-color: rgba(200,131,42,0.12); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .corner {
+    position: fixed;
+    font-size: 2rem;
+    color: rgba(200,131,42,0.2);
+    font-family: 'Playfair Display', serif;
+    line-height: 1;
+  }
+  .corner.tl { top: 16px; left: 20px; }
+  .corner.tr { top: 16px; right: 20px; transform: scaleX(-1); }
+  .corner.bl { bottom: 16px; left: 20px; transform: scaleY(-1); }
+  .corner.br { bottom: 16px; right: 20px; transform: scale(-1); }
+
+  .stage {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: grandEntrance 1.2s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  @keyframes grandEntrance {
+    from { opacity: 0; transform: scale(0.92) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .eyebrow {
+    font-size: 0.6rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(139,69,19,0.45);
+    margin-bottom: 1.8rem;
+    font-weight: 300;
+  }
+
+  .bun-wrap {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 1.6rem;
+    position: relative;
+    animation: holyFloat 3.5s ease-in-out infinite;
+  }
+
+  @keyframes holyFloat {
+    0%,100% { transform: translateY(0) rotate(-1deg); }
+    50%      { transform: translateY(-8px) rotate(1deg); }
+  }
+
+  .steam {
+    position: absolute;
+    top: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+  }
+
+  .s {
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(to top, rgba(200,131,42,0.6), transparent);
+    animation: steamUp 2.2s ease-in-out infinite;
+  }
+  .s:nth-child(1) { height: 20px; animation-delay: 0s; }
+  .s:nth-child(2) { height: 28px; animation-delay: 0.5s; }
+  .s:nth-child(3) { height: 18px; animation-delay: 1s; }
+
+  @keyframes steamUp {
+    0%   { opacity: 0; transform: translateY(0) scaleX(1); }
+    50%  { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-20px) scaleX(1.5); }
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: min(320px, 80vw);
+    margin: 1.4rem auto 1.2rem;
+  }
+  .div-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(200,131,42,0.35), transparent); }
+  .div-orn { color: var(--accent); font-size: 0.9rem; opacity: 0.6; }
+
+  .headline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: clamp(2rem, 8vw, 3.4rem);
+    color: var(--cinn);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    animation: subtlePulse 4s ease-in-out infinite;
+  }
+
+  .headline .mmm { color: var(--dough); }
+  .headline .brand { color: var(--dark); }
+
+  @keyframes subtlePulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.88; }
+  }
+
+  .footer-text {
+    margin-top: 1.8rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(44,26,8,0.25);
+    font-weight: 300;
+  }
+</style>
+</head>
+<body>
+
+<div class="ring"></div>
+<div class="ring"></div>
+<div class="ring"></div>
+
+<div class="corner tl">❧</div>
+<div class="corner tr">❧</div>
+<div class="corner bl">❧</div>
+<div class="corner br">❧</div>
+
+<div class="stage">
+
+  <p class="eyebrow">An Important Scholarly Contribution</p>
+
+  <div class="bun-wrap">
+    <div class="steam">
+      <div class="s"></div>
+      <div class="s"></div>
+      <div class="s"></div>
+    </div>
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="160" height="160">
+      <ellipse cx="100" cy="188" rx="65" ry="7" fill="rgba(139,69,19,0.1)"/>
+      <ellipse cx="100" cy="108" rx="72" ry="64" fill="#d4924d"/>
+      <ellipse cx="100" cy="85" rx="60" ry="46" fill="#e0a85e"/>
+      <path d="M100,50 C138,50 165,70 165,100 C165,130 138,152 100,152 C62,152 35,130 35,100 C35,70 62,50 100,50 Z" fill="none" stroke="#8b4513" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+      <path d="M100,65 C130,65 150,80 150,100 C150,120 130,136 100,136 C70,136 50,120 50,100 C50,80 70,65 100,65 Z" fill="none" stroke="#7a3e10" stroke-width="5" stroke-linecap="round" opacity="0.55"/>
+      <path d="M100,78 C122,78 136,88 136,100 C136,112 122,122 100,122 C78,122 64,112 64,100 C64,88 78,78 100,78 Z" fill="none" stroke="#6b3610" stroke-width="4.5" stroke-linecap="round" opacity="0.5"/>
+      <circle cx="100" cy="100" r="12" fill="#5c2d0b" opacity="0.7"/>
+      <circle cx="100" cy="100" r="6" fill="#3d1d07" opacity="0.8"/>
+      <path d="M68,72 Q80,62 95,68 Q108,74 100,82 Q92,90 108,88 Q124,86 118,76" fill="none" stroke="#fff8ef" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+      <path d="M115,115 Q128,108 132,120 Q136,132 120,128" fill="none" stroke="#fff8ef" stroke-width="3.5" stroke-linecap="round" opacity="0.75"/>
+      <ellipse cx="78" cy="72" rx="14" ry="8" fill="rgba(255,248,239,0.25)" transform="rotate(-20,78,72)"/>
+    </svg>
+  </div>
+
+  <div class="divider">
+    <div class="div-line"></div>
+    <span class="div-orn">✦</span>
+    <div class="div-line"></div>
+  </div>
+
+  <h1 class="headline">
+    <span class="mmm">mmmmmmmmm</span><br>
+    <span class="brand">Cinnabon</span>
+  </h1>
+
+  <p class="footer-text">est. a long time ago &nbsp;·&nbsp; warm always</p>
+
+</div>
+
+</body>
+</html>
