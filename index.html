@@ -24,6 +24,7 @@
     align-items: center;
     justify-content: center;
     font-family: 'Cormorant Garamond', serif;
+    user-select: none;
   }
 
   body::before {
@@ -52,11 +53,27 @@
     color: rgba(200,131,42,0.2);
     font-family: 'Playfair Display', serif;
     line-height: 1;
+    pointer-events: none;
   }
   .corner.tl { top: 16px; left: 20px; }
   .corner.tr { top: 16px; right: 20px; transform: scaleX(-1); }
   .corner.bl { bottom: 16px; left: 20px; transform: scaleY(-1); }
   .corner.br { bottom: 16px; right: 20px; transform: scale(-1); }
+
+  /* hint text */
+  .hint {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.58rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(139,69,19,0.3);
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 0.6s;
+  }
 
   .stage {
     position: relative;
@@ -80,20 +97,52 @@
     color: rgba(139,69,19,0.45);
     margin-bottom: 1.8rem;
     font-weight: 300;
+    transition: opacity 0.3s;
   }
 
+  /* Draggable bun */
   .bun-wrap {
     width: 160px;
     height: 160px;
     margin: 0 auto 1.6rem;
     position: relative;
+    cursor: grab;
     animation: holyFloat 3.5s ease-in-out infinite;
+    transition: filter 0.2s;
   }
+
+  .bun-wrap.dragging {
+    animation: none;
+    cursor: grabbing;
+    filter: drop-shadow(0 12px 24px rgba(139,69,19,0.25));
+  }
+
+  .bun-wrap:active { cursor: grabbing; }
 
   @keyframes holyFloat {
     0%,100% { transform: translateY(0) rotate(-1deg); }
     50%      { transform: translateY(-8px) rotate(1deg); }
   }
+
+  @keyframes shake {
+    0%,100% { transform: rotate(0deg); }
+    15% { transform: rotate(-12deg) scale(1.08); }
+    30% { transform: rotate(10deg) scale(1.08); }
+    45% { transform: rotate(-8deg); }
+    60% { transform: rotate(6deg); }
+    75% { transform: rotate(-3deg); }
+  }
+
+  .bun-wrap.shaking { animation: shake 0.5s ease both; }
+
+  @keyframes nomnom {
+    0%   { transform: scale(1); }
+    25%  { transform: scale(1.18) rotate(-3deg); }
+    50%  { transform: scale(0.92) rotate(2deg); }
+    75%  { transform: scale(1.08) rotate(-1deg); }
+    100% { transform: scale(1); }
+  }
+  .bun-wrap.nomming { animation: nomnom 0.4s ease both; }
 
   .steam {
     position: absolute;
@@ -102,6 +151,7 @@
     transform: translateX(-50%);
     display: flex;
     gap: 12px;
+    pointer-events: none;
   }
 
   .s {
@@ -126,6 +176,7 @@
     gap: 10px;
     width: min(320px, 80vw);
     margin: 1.4rem auto 1.2rem;
+    pointer-events: none;
   }
   .div-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(200,131,42,0.35), transparent); }
   .div-orn { color: var(--accent); font-size: 0.9rem; opacity: 0.6; }
@@ -138,16 +189,21 @@
     color: var(--cinn);
     line-height: 1.05;
     letter-spacing: -0.01em;
-    animation: subtlePulse 4s ease-in-out infinite;
+    cursor: pointer;
+    transition: transform 0.15s;
+    position: relative;
   }
 
-  .headline .mmm { color: var(--dough); }
+  .headline:hover { transform: scale(1.02); }
+  .headline:active { transform: scale(0.98); }
+
+  .headline .mmm {
+    color: var(--dough);
+    display: inline-block;
+    transition: letter-spacing 0.3s ease;
+  }
+
   .headline .brand { color: var(--dark); }
-
-  @keyframes subtlePulse {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.88; }
-  }
 
   .footer-text {
     margin-top: 1.8rem;
@@ -156,6 +212,47 @@
     text-transform: uppercase;
     color: rgba(44,26,8,0.25);
     font-weight: 300;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+
+  /* Floating m particles */
+  .particle {
+    position: fixed;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 700;
+    color: var(--dough);
+    pointer-events: none;
+    z-index: 999;
+    animation: floatUp 1.4s ease-out forwards;
+  }
+
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(-120px) scale(0.4) rotate(var(--rot)); }
+  }
+
+  /* Frosting drip that appears on clicks */
+  .drip {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #fff8ef;
+    pointer-events: none;
+    z-index: 998;
+    animation: dripDown 1s ease-in forwards;
+  }
+
+  @keyframes dripDown {
+    0%   { opacity: 0.9; transform: scale(1) translateY(0); }
+    100% { opacity: 0; transform: scale(0.3) translateY(60px); }
+  }
+
+  /* Glow on the bun when clicked a lot */
+  .bun-wrap.glowing svg {
+    filter: drop-shadow(0 0 16px rgba(212,146,77,0.6));
   }
 </style>
 </head>
@@ -170,11 +267,13 @@
 <div class="corner bl">❧</div>
 <div class="corner br">❧</div>
 
-<div class="stage">
+<p class="hint" id="hint">click the bun · drag it · click the text</p>
 
-  <p class="eyebrow">An Important Scholarly Contribution</p>
+<div class="stage" id="stage">
 
-  <div class="bun-wrap">
+  <p class="eyebrow" id="eyebrow">An Important Scholarly Contribution</p>
+
+  <div class="bun-wrap" id="bun">
     <div class="steam">
       <div class="s"></div>
       <div class="s"></div>
@@ -201,14 +300,161 @@
     <div class="div-line"></div>
   </div>
 
-  <h1 class="headline">
-    <span class="mmm">mmmmmmmmm</span><br>
+  <h1 class="headline" id="headline">
+    <span class="mmm" id="mmm">mmmmmmmmm</span><br>
     <span class="brand">Cinnabon</span>
   </h1>
 
-  <p class="footer-text">est. a long time ago &nbsp;·&nbsp; warm always</p>
+  <p class="footer-text" id="footer">est. a long time ago &nbsp;·&nbsp; warm always</p>
 
 </div>
 
+<script>
+  const bun = document.getElementById('bun');
+  const mmm = document.getElementById('mmm');
+  const headline = document.getElementById('headline');
+  const hint = document.getElementById('hint');
+  const eyebrow = document.getElementById('eyebrow');
+  const footer = document.getElementById('footer');
+
+  let clickCount = 0;
+  let mCount = 9;
+  let isDragging = false;
+  let dragOffX = 0, dragOffY = 0;
+  let bunX = 0, bunY = 0;
+  let hintHidden = false;
+
+  const eyebrows = [
+    'An Important Scholarly Contribution',
+    'A Treatise On Warmth',
+    'Peer-Reviewed & Frosted',
+    'Presented With Great Solemnity',
+    'The Pinnacle Of Human Achievement',
+    'A Nobel-Worthy Discovery',
+    'Endorsed By No One In Particular',
+    'Still Warm, Still Perfect',
+  ];
+
+  const footers = [
+    'est. a long time ago · warm always',
+    'handle with care · very important',
+    'do not microwave · unless you have to',
+    'pairs well with everything · especially nothing',
+    'freshly baked · spiritually speaking',
+    'patent pending · on the spiral',
+  ];
+
+  function hideHint() {
+    if (!hintHidden) {
+      hint.style.opacity = '0';
+      hintHidden = true;
+    }
+  }
+
+  function spawnParticle(x, y) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 14 + Math.random() * 22;
+    p.style.cssText = `left:${x}px;top:${y}px;font-size:${size}px;--rot:${(Math.random()-0.5)*40}deg`;
+    p.textContent = 'm';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1400);
+  }
+
+  function spawnDrip(x, y) {
+    const d = document.createElement('div');
+    d.className = 'drip';
+    d.style.cssText = `left:${x + (Math.random()-0.5)*40}px;top:${y}px`;
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 1000);
+  }
+
+  // Click bun — nom it, spawn particles, grow m's
+  bun.addEventListener('click', (e) => {
+    if (isDragging) return;
+    hideHint();
+    clickCount++;
+    mCount = Math.min(mCount + 2, 40);
+    mmm.textContent = 'm'.repeat(mCount);
+
+    bun.classList.remove('nomming', 'shaking', 'glowing');
+    void bun.offsetWidth;
+    bun.classList.add('nomming');
+    if (clickCount > 5) bun.classList.add('glowing');
+
+    const rect = bun.getBoundingClientRect();
+    for (let i = 0; i < 4; i++) {
+      setTimeout(() => {
+        spawnParticle(
+          rect.left + 20 + Math.random() * (rect.width - 40),
+          rect.top + 20 + Math.random() * (rect.height * 0.5)
+        );
+      }, i * 60);
+    }
+    spawnDrip(rect.left + rect.width/2, rect.top + rect.height * 0.7);
+
+    if (clickCount % 4 === 0) {
+      eyebrow.textContent = eyebrows[Math.floor(Math.random() * eyebrows.length)];
+    }
+  });
+
+  // Click headline — shrink the m's back
+  headline.addEventListener('click', (e) => {
+    hideHint();
+    mCount = Math.max(mCount - 3, 1);
+    mmm.textContent = 'm'.repeat(mCount);
+    clickCount = Math.max(0, clickCount - 3);
+    if (clickCount <= 5) bun.classList.remove('glowing');
+
+    footer.textContent = footers[Math.floor(Math.random() * footers.length)];
+
+    // shake bun in protest
+    bun.classList.remove('shaking');
+    void bun.offsetWidth;
+    bun.classList.add('shaking');
+  });
+
+  // Drag the bun
+  bun.addEventListener('mousedown', startDrag);
+  bun.addEventListener('touchstart', (e) => startDrag(e.touches[0]), { passive: true });
+
+  function startDrag(e) {
+    isDragging = false; // will become true on first move
+    const rect = bun.getBoundingClientRect();
+    dragOffX = e.clientX - rect.left - rect.width / 2;
+    dragOffY = e.clientY - rect.top - rect.height / 2;
+    bunX = rect.left + rect.width / 2 - window.innerWidth / 2;
+    bunY = rect.top + rect.height / 2 - window.innerHeight / 2;
+
+    window.addEventListener('mousemove', onDrag);
+    window.addEventListener('mouseup', endDrag);
+    window.addEventListener('touchmove', (e) => onDrag(e.touches[0]), { passive: true });
+    window.addEventListener('touchend', endDrag);
+  }
+
+  function onDrag(e) {
+    if (!isDragging) {
+      isDragging = true;
+      bun.classList.add('dragging');
+      hideHint();
+    }
+    const targetX = e.clientX - window.innerWidth / 2 - dragOffX;
+    const targetY = e.clientY - window.innerHeight / 2 - dragOffY;
+    bunX += (targetX - bunX) * 0.55;
+    bunY += (targetY - bunY) * 0.55;
+    bun.style.transform = `translate(${bunX}px, ${bunY}px)`;
+  }
+
+  function endDrag() {
+    window.removeEventListener('mousemove', onDrag);
+    window.removeEventListener('mouseup', endDrag);
+    bun.classList.remove('dragging');
+
+    // Snap back with a spring wiggle
+    bun.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    bun.style.transform = '';
+    setTimeout(() => { bun.style.transition = ''; isDragging = false; }, 650);
+  }
+</script>
 </body>
 </html>
